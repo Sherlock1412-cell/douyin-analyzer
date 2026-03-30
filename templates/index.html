@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>抖音视频分析器</title>
+    <title data-i18n="app.title">多平台视频分析器</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -11,12 +11,27 @@
         <!-- Header -->
         <header class="header">
             <div class="logo">
-                <span class="logo-icon">🎵</span>
-                <h1 data-i18n="app.title">抖音视频分析器</h1>
+                <span class="logo-icon">🎬</span>
+                <h1 data-i18n="app.title">多平台视频分析器</h1>
             </div>
-            <p class="subtitle" data-i18n="app.subtitle">视频分析 · 内容总结 · 音频提取</p>
-            <!-- Language switcher is injected by i18n.js -->
+            <p class="subtitle" data-i18n="app.subtitle">抖音 · B站 · YouTube</p>
         </header>
+
+        <!-- Platform Selector -->
+        <div class="platform-bar">
+            <button class="platform-chip active" data-platform="all" onclick="filterPlatform('all')">
+                <span>🌐</span> <span data-i18n="platform.all">全部</span>
+            </button>
+            <button class="platform-chip" data-platform="douyin" onclick="filterPlatform('douyin')">
+                <span>🎵</span> <span data-i18n="platform.douyin">抖音</span>
+            </button>
+            <button class="platform-chip" data-platform="bilibili" onclick="filterPlatform('bilibili')">
+                <span>📺</span> <span data-i18n="platform.bilibili">B站</span>
+            </button>
+            <button class="platform-chip" data-platform="youtube" onclick="filterPlatform('youtube')">
+                <span>▶️</span> <span data-i18n="platform.youtube">YouTube</span>
+            </button>
+        </div>
 
         <!-- Tab Navigation -->
         <nav class="tabs">
@@ -26,7 +41,7 @@
             </button>
             <button class="tab" data-tab="user" onclick="switchTab('user')">
                 <span class="tab-icon">👤</span>
-                <span class="tab-text" data-i18n="tab.user">作者分析</span>
+                <span class="tab-text" data-i18n="tab.user">创作者分析</span>
             </button>
             <button class="tab" data-tab="audio" onclick="switchTab('audio')">
                 <span class="tab-icon">🎧</span>
@@ -40,15 +55,15 @@
             <section id="panel-analyze" class="panel active">
                 <div class="card input-card">
                     <h2 data-i18n="analyze.title">分析视频内容</h2>
-                    <p class="card-desc" data-i18n="analyze.desc">输入一个或多个抖音视频链接，分析视频文案、内容并生成总结</p>
+                    <p class="card-desc" data-i18n="analyze.desc">输入视频链接（支持抖音/B站/YouTube），分析文案、内容并生成总结</p>
                     <div class="input-group">
                         <label>
                             <span data-i18n="analyze.urls_label">视频链接</span>
-                            <span class="hint" data-i18n="analyze.urls_hint">（每行一个链接）</span>
+                            <span class="hint" data-i18n="analyze.urls_hint">（每行一个，支持混合平台）</span>
                         </label>
-                        <textarea id="analyze-urls" rows="4"
+                        <textarea id="analyze-urls" rows="5"
                             data-i18n-placeholder="analyze.urls_placeholder"
-                            placeholder="粘贴抖音视频链接，例如：&#10;https://www.douyin.com/video/1234567890&#10;https://v.douyin.com/xxxx/"></textarea>
+                            placeholder="粘贴视频链接，例如：&#10;https://www.douyin.com/video/1234567890&#10;https://www.bilibili.com/video/BV1xx411c7mD&#10;https://www.youtube.com/watch?v=dQw4w9WgXcQ"></textarea>
                     </div>
                     <button class="btn btn-primary" onclick="startAnalyze()">
                         <span class="btn-icon">🔍</span>
@@ -58,20 +73,28 @@
                 <div id="analyze-results" class="results-container"></div>
             </section>
 
-            <!-- 作者分析面板 -->
+            <!-- 创作者分析面板 -->
             <section id="panel-user" class="panel">
                 <div class="card input-card">
-                    <h2 data-i18n="user.title">分析作者作品</h2>
-                    <p class="card-desc" data-i18n="user.desc">输入抖音用户主页链接，获取并总结该作者的作品</p>
+                    <h2 data-i18n="user.title">分析创作者作品</h2>
+                    <p class="card-desc" data-i18n="user.desc">输入用户/频道主页链接，获取并总结其作品列表</p>
                     <div class="input-group">
-                        <label data-i18n="user.url_label">用户主页链接</label>
+                        <label data-i18n="user.url_label">主页链接</label>
                         <input type="text" id="user-url"
                             data-i18n-placeholder="user.url_placeholder"
-                            placeholder="https://www.douyin.com/user/MS4wLjABAAAA...">
+                            placeholder="抖音/UP主/YouTube频道主页链接">
+                    </div>
+                    <div class="platform-examples">
+                        <p class="examples-title" data-i18n="user.examples_title">支持格式示例：</p>
+                        <ul>
+                            <li>🎵 <code>https://www.douyin.com/user/MS4wLjABAAAA...</code></li>
+                            <li>📺 <code>https://space.bilibili.com/12345678/video</code></li>
+                            <li>▶️ <code>https://www.youtube.com/@channelname</code></li>
+                        </ul>
                     </div>
                     <button class="btn btn-primary" onclick="startUserAnalyze()">
                         <span class="btn-icon">👤</span>
-                        <span data-i18n="user.btn">分析作者</span>
+                        <span data-i18n="user.btn">分析创作者</span>
                     </button>
                 </div>
                 <div id="user-results" class="results-container"></div>
@@ -81,12 +104,12 @@
             <section id="panel-audio" class="panel">
                 <div class="card input-card">
                     <h2 data-i18n="audio.title">提取视频音频</h2>
-                    <p class="card-desc" data-i18n="audio.desc">输入抖音视频链接，提取并下载视频中的音频（MP3格式）</p>
+                    <p class="card-desc" data-i18n="audio.desc">输入视频链接，提取并下载音频（MP3格式）</p>
                     <div class="input-group">
                         <label data-i18n="audio.url_label">视频链接</label>
                         <input type="text" id="audio-url"
                             data-i18n-placeholder="audio.url_placeholder"
-                            placeholder="https://www.douyin.com/video/1234567890">
+                            placeholder="抖音/B站/YouTube 视频链接">
                     </div>
                     <button class="btn btn-primary" onclick="startAudioExtract()">
                         <span class="btn-icon">🎧</span>
@@ -108,7 +131,7 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p data-i18n="footer.credit">抖音视频分析器 · 基于 yt-dlp & FFmpeg</p>
+            <p data-i18n="footer.credit">多平台视频分析器 · 基于 yt-dlp & FFmpeg</p>
             <p class="tips" data-i18n-html="footer.tips">💡 提示：如遇下载失败，可在项目目录放置 <code>cookies.txt</code> 文件解决登录限制</p>
         </footer>
     </div>
