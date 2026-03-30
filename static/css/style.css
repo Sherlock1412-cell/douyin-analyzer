@@ -612,6 +612,38 @@ textarea::placeholder {
     font-size: 11px;
 }
 
+/* ============ Language Switcher ============ */
+.lang-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 14px;
+}
+
+.lang-option {
+    padding: 4px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+}
+
+.lang-option:hover {
+    color: var(--text);
+    border-color: var(--text-secondary);
+}
+
+.lang-option.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
 /* ============ Responsive ============ */
 @media (max-width: 600px) {
     .app-container {

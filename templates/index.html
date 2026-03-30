@@ -12,24 +12,25 @@
         <header class="header">
             <div class="logo">
                 <span class="logo-icon">🎵</span>
-                <h1>抖音视频分析器</h1>
+                <h1 data-i18n="app.title">抖音视频分析器</h1>
             </div>
-            <p class="subtitle">视频分析 · 内容总结 · 音频提取</p>
+            <p class="subtitle" data-i18n="app.subtitle">视频分析 · 内容总结 · 音频提取</p>
+            <!-- Language switcher is injected by i18n.js -->
         </header>
 
         <!-- Tab Navigation -->
         <nav class="tabs">
             <button class="tab active" data-tab="analyze" onclick="switchTab('analyze')">
                 <span class="tab-icon">📊</span>
-                <span class="tab-text">视频分析</span>
+                <span class="tab-text" data-i18n="tab.analyze">视频分析</span>
             </button>
             <button class="tab" data-tab="user" onclick="switchTab('user')">
                 <span class="tab-icon">👤</span>
-                <span class="tab-text">作者分析</span>
+                <span class="tab-text" data-i18n="tab.user">作者分析</span>
             </button>
             <button class="tab" data-tab="audio" onclick="switchTab('audio')">
                 <span class="tab-icon">🎧</span>
-                <span class="tab-text">音频提取</span>
+                <span class="tab-text" data-i18n="tab.audio">音频提取</span>
             </button>
         </nav>
 
@@ -38,14 +39,20 @@
             <!-- 视频分析面板 -->
             <section id="panel-analyze" class="panel active">
                 <div class="card input-card">
-                    <h2>分析视频内容</h2>
-                    <p class="card-desc">输入一个或多个抖音视频链接，分析视频文案、内容并生成总结</p>
+                    <h2 data-i18n="analyze.title">分析视频内容</h2>
+                    <p class="card-desc" data-i18n="analyze.desc">输入一个或多个抖音视频链接，分析视频文案、内容并生成总结</p>
                     <div class="input-group">
-                        <label>视频链接 <span class="hint">（每行一个链接）</span></label>
-                        <textarea id="analyze-urls" rows="4" placeholder="粘贴抖音视频链接，例如：&#10;https://www.douyin.com/video/1234567890&#10;https://v.douyin.com/xxxx/"></textarea>
+                        <label>
+                            <span data-i18n="analyze.urls_label">视频链接</span>
+                            <span class="hint" data-i18n="analyze.urls_hint">（每行一个链接）</span>
+                        </label>
+                        <textarea id="analyze-urls" rows="4"
+                            data-i18n-placeholder="analyze.urls_placeholder"
+                            placeholder="粘贴抖音视频链接，例如：&#10;https://www.douyin.com/video/1234567890&#10;https://v.douyin.com/xxxx/"></textarea>
                     </div>
                     <button class="btn btn-primary" onclick="startAnalyze()">
-                        <span class="btn-icon">🔍</span> 开始分析
+                        <span class="btn-icon">🔍</span>
+                        <span data-i18n="analyze.btn">开始分析</span>
                     </button>
                 </div>
                 <div id="analyze-results" class="results-container"></div>
@@ -54,14 +61,17 @@
             <!-- 作者分析面板 -->
             <section id="panel-user" class="panel">
                 <div class="card input-card">
-                    <h2>分析作者作品</h2>
-                    <p class="card-desc">输入抖音用户主页链接，获取并总结该作者的作品</p>
+                    <h2 data-i18n="user.title">分析作者作品</h2>
+                    <p class="card-desc" data-i18n="user.desc">输入抖音用户主页链接，获取并总结该作者的作品</p>
                     <div class="input-group">
-                        <label>用户主页链接</label>
-                        <input type="text" id="user-url" placeholder="https://www.douyin.com/user/MS4wLjABAAAA...">
+                        <label data-i18n="user.url_label">用户主页链接</label>
+                        <input type="text" id="user-url"
+                            data-i18n-placeholder="user.url_placeholder"
+                            placeholder="https://www.douyin.com/user/MS4wLjABAAAA...">
                     </div>
                     <button class="btn btn-primary" onclick="startUserAnalyze()">
-                        <span class="btn-icon">👤</span> 分析作者
+                        <span class="btn-icon">👤</span>
+                        <span data-i18n="user.btn">分析作者</span>
                     </button>
                 </div>
                 <div id="user-results" class="results-container"></div>
@@ -70,14 +80,17 @@
             <!-- 音频提取面板 -->
             <section id="panel-audio" class="panel">
                 <div class="card input-card">
-                    <h2>提取视频音频</h2>
-                    <p class="card-desc">输入抖音视频链接，提取并下载视频中的音频（MP3格式）</p>
+                    <h2 data-i18n="audio.title">提取视频音频</h2>
+                    <p class="card-desc" data-i18n="audio.desc">输入抖音视频链接，提取并下载视频中的音频（MP3格式）</p>
                     <div class="input-group">
-                        <label>视频链接</label>
-                        <input type="text" id="audio-url" placeholder="https://www.douyin.com/video/1234567890">
+                        <label data-i18n="audio.url_label">视频链接</label>
+                        <input type="text" id="audio-url"
+                            data-i18n-placeholder="audio.url_placeholder"
+                            placeholder="https://www.douyin.com/video/1234567890">
                     </div>
                     <button class="btn btn-primary" onclick="startAudioExtract()">
-                        <span class="btn-icon">🎧</span> 提取音频
+                        <span class="btn-icon">🎧</span>
+                        <span data-i18n="audio.btn">提取音频</span>
                     </button>
                 </div>
                 <div id="audio-results" class="results-container"></div>
@@ -87,7 +100,7 @@
         <!-- 历史记录 -->
         <section class="history-section">
             <div class="history-header" onclick="toggleHistory()">
-                <h3>📋 任务历史</h3>
+                <h3 data-i18n="history.title">📋 任务历史</h3>
                 <span class="toggle-arrow" id="history-arrow">▼</span>
             </div>
             <div id="history-list" class="history-list collapsed"></div>
@@ -95,11 +108,12 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p>抖音视频分析器 · 基于 yt-dlp & FFmpeg</p>
-            <p class="tips">💡 提示：如遇下载失败，可在项目目录放置 <code>cookies.txt</code> 文件解决登录限制</p>
+            <p data-i18n="footer.credit">抖音视频分析器 · 基于 yt-dlp & FFmpeg</p>
+            <p class="tips" data-i18n-html="footer.tips">💡 提示：如遇下载失败，可在项目目录放置 <code>cookies.txt</code> 文件解决登录限制</p>
         </footer>
     </div>
 
+    <script src="/static/js/i18n.js"></script>
     <script src="/static/js/app.js"></script>
 </body>
 </html>
