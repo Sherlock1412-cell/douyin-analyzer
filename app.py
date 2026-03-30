@@ -373,7 +373,9 @@ def index():
 
 @app.route('/api/analyze', methods=['POST'])
 def api_analyze():
-    data = request.json
+    data = request.get_json(silent=True)
+    if not data or not isinstance(data, dict):
+        return jsonify({'error': '请提供有效的 JSON 请求体'}), 400
     urls = data.get('urls', [])
     if isinstance(urls, str):
         urls = [urls]
@@ -392,9 +394,9 @@ def api_analyze():
             'platform': platform, 'status': TaskStatus.PENDING,
             'created_at': datetime.now().isoformat(),
         }
-        t = threading.Thread(target=download_video, args=(url, task_id, False))
-        t.daemon = True
-        t.start()
+        th = threading.Thread(target=download_video, args=(url, task_id, False))
+        th.daemon = True
+        th.start()
         task_ids.append(task_id)
 
     return jsonify({'task_ids': task_ids, 'message': f'已创建 {len(task_ids)} 个分析任务'})
@@ -402,7 +404,9 @@ def api_analyze():
 
 @app.route('/api/user', methods=['POST'])
 def api_user():
-    data = request.json
+    data = request.get_json(silent=True)
+    if not data or not isinstance(data, dict):
+        return jsonify({'error': '请提供有效的 JSON 请求体'}), 400
     user_url = data.get('url', '').strip()
     if not user_url:
         return jsonify({'error': '请提供用户/频道链接'}), 400
@@ -414,16 +418,18 @@ def api_user():
         'platform': platform, 'status': TaskStatus.PENDING,
         'created_at': datetime.now().isoformat(),
     }
-    t = threading.Thread(target=get_user_videos, args=(user_url, task_id))
-    t.daemon = True
-    t.start()
+    th = threading.Thread(target=get_user_videos, args=(user_url, task_id))
+    th.daemon = True
+    th.start()
 
     return jsonify({'task_id': task_id, 'message': '已创建创作者分析任务'})
 
 
 @app.route('/api/extract-audio', methods=['POST'])
 def api_extract_audio():
-    data = request.json
+    data = request.get_json(silent=True)
+    if not data or not isinstance(data, dict):
+        return jsonify({'error': '请提供有效的 JSON 请求体'}), 400
     url = data.get('url', '').strip()
     if not url:
         return jsonify({'error': '请提供视频链接'}), 400
@@ -435,9 +441,9 @@ def api_extract_audio():
         'platform': platform, 'status': TaskStatus.PENDING,
         'created_at': datetime.now().isoformat(),
     }
-    t = threading.Thread(target=download_video, args=(url, task_id, True))
-    t.daemon = True
-    t.start()
+    th = threading.Thread(target=download_video, args=(url, task_id, True))
+    th.daemon = True
+    th.start()
 
     return jsonify({'task_id': task_id, 'message': '已创建音频提取任务'})
 
@@ -471,16 +477,31 @@ def api_task_status(task_id):
 
 @app.route('/api/download/<task_id>/<file_type>')
 def api_download(task_id, file_type):
+    # 防止路径穿越
+    if not re.match(r'^[a-f0-9]{12}$', task_id):
+        return jsonify({'error': '无效的任务ID'}), 400
+    if file_type not in ('audio', 'video'):
+        return jsonify({'error': '无效的文件类型'}), 400
+
     task = tasks.get(task_id)
     if not task:
-        return '任务不存在', 404
+        return jsonify({'error': '任务不存在'}), 404
+
+    download_folder = os.path.realpath(app.config['DOWNLOAD_FOLDER'])
+
     if file_type == 'audio' and task.get('audio_path'):
-        return send_file(task['audio_path'], as_attachment=True,
+        real_path = os.path.realpath(task['audio_path'])
+        if not real_path.startswith(download_folder):
+            return jsonify({'error': '禁止访问'}), 403
+        return send_file(real_path, as_attachment=True,
                          download_name=task.get('audio_filename', 'audio.mp3'))
     elif file_type == 'video' and task.get('video_path'):
-        return send_file(task['video_path'], as_attachment=True,
+        real_path = os.path.realpath(task['video_path'])
+        if not real_path.startswith(download_folder):
+            return jsonify({'error': '禁止访问'}), 403
+        return send_file(real_path, as_attachment=True,
                          download_name=task.get('video_filename', 'video.mp4'))
-    return '文件不存在', 404
+    return jsonify({'error': '文件不存在'}), 404
 
 
 @app.route('/api/tasks')

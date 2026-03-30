@@ -6,6 +6,11 @@ const I18n = (() => {
     let currentLang = localStorage.getItem('lang') || detectLang();
     let translations = {};
     let loaded = {};
+    let ready = null;
+    let readyResolve = null;
+
+    // 创建 ready promise
+    ready = new Promise(resolve => { readyResolve = resolve; });
 
     function detectLang() {
         const nav = navigator.language || navigator.userLanguage || 'zh';
@@ -26,7 +31,6 @@ const I18n = (() => {
             translations = loaded[lang];
         } catch (e) {
             console.error('i18n load error:', e);
-            // fallback to zh
             if (lang !== 'zh') {
                 await loadLang('zh');
             }
@@ -37,29 +41,19 @@ const I18n = (() => {
         return translations[key] || fallback || key;
     }
 
-    /** 将 HTML 中所有 data-i18n 属性的元素翻译 */
     function translateDOM() {
-        // 文本内容
         document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            el.textContent = t(key);
+            el.textContent = t(el.getAttribute('data-i18n'));
         });
-        // placeholder
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            const key = el.getAttribute('data-i18n-placeholder');
-            el.placeholder = t(key);
+            el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
         });
-        // HTML 内容（支持 <code> 等标签）
         document.querySelectorAll('[data-i18n-html]').forEach(el => {
-            const key = el.getAttribute('data-i18n-html');
-            el.innerHTML = t(key);
+            el.innerHTML = t(el.getAttribute('data-i18n-html'));
         });
-        // title 属性
         document.querySelectorAll('[data-i18n-title]').forEach(el => {
-            const key = el.getAttribute('data-i18n-title');
-            el.title = t(key);
+            el.title = t(el.getAttribute('data-i18n-title'));
         });
-        // 页面标题
         document.title = t('app.title');
     }
 
@@ -68,24 +62,20 @@ const I18n = (() => {
         localStorage.setItem('lang', lang);
         await loadLang(lang);
         translateDOM();
-        // 更新语言选择器状态
         document.querySelectorAll('.lang-option').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.lang === lang);
         });
     }
 
-    function getLang() {
-        return currentLang;
-    }
+    function getLang() { return currentLang; }
 
-    /** 初始化 */
     async function init() {
         await loadLang(currentLang);
         translateDOM();
         buildLangSwitcher();
+        readyResolve();
     }
 
-    /** 构建语言切换器 */
     function buildLangSwitcher() {
         const langs = [
             { code: 'zh', label: '中文' },
@@ -93,17 +83,13 @@ const I18n = (() => {
             { code: 'ja', label: '日本語' },
         ];
 
-        // 查找或创建语言切换容器
         let container = document.getElementById('lang-switcher');
         if (!container) {
             container = document.createElement('div');
             container.id = 'lang-switcher';
             container.className = 'lang-switcher';
-
             const header = document.querySelector('.header');
-            if (header) {
-                header.appendChild(container);
-            }
+            if (header) header.appendChild(container);
         }
 
         container.innerHTML = langs.map(l =>
@@ -113,8 +99,12 @@ const I18n = (() => {
         ).join('');
     }
 
-    return { init, setLang, getLang, t, translateDOM };
-})();
+    // 自动初始化
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 
-// 自动初始化
-document.addEventListener('DOMContentLoaded', () => I18n.init());
+    return { init, setLang, getLang, t, translateDOM, ready };
+})();

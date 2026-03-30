@@ -391,4 +391,10 @@ function showToast(msg) {
 }
 
 // ============ 初始化 ============
-document.addEventListener('DOMContentLoaded', () => loadHistory());
+document.addEventListener('DOMContentLoaded', async () => {
+    // 等待 i18n 加载完成再执行
+    if (typeof I18n !== 'undefined' && I18n.ready) {
+        await I18n.ready;
+    }
+    loadHistory();
+});
