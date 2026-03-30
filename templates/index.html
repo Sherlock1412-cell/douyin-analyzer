@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抖音视频分析器</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🎵</span>
+                <h1>抖音视频分析器</h1>
+            </div>
+            <p class="subtitle">视频分析 · 内容总结 · 音频提取</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tabs">
+            <button class="tab active" data-tab="analyze" onclick="switchTab('analyze')">
+                <span class="tab-icon">📊</span>
+                <span class="tab-text">视频分析</span>
+            </button>
+            <button class="tab" data-tab="user" onclick="switchTab('user')">
+                <span class="tab-icon">👤</span>
+                <span class="tab-text">作者分析</span>
+            </button>
+            <button class="tab" data-tab="audio" onclick="switchTab('audio')">
+                <span class="tab-icon">🎧</span>
+                <span class="tab-text">音频提取</span>
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- 视频分析面板 -->
+            <section id="panel-analyze" class="panel active">
+                <div class="card input-card">
+                    <h2>分析视频内容</h2>
+                    <p class="card-desc">输入一个或多个抖音视频链接，分析视频文案、内容并生成总结</p>
+                    <div class="input-group">
+                        <label>视频链接 <span class="hint">（每行一个链接）</span></label>
+                        <textarea id="analyze-urls" rows="4" placeholder="粘贴抖音视频链接，例如：&#10;https://www.douyin.com/video/1234567890&#10;https://v.douyin.com/xxxx/"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="startAnalyze()">
+                        <span class="btn-icon">🔍</span> 开始分析
+                    </button>
+                </div>
+                <div id="analyze-results" class="results-container"></div>
+            </section>
+
+            <!-- 作者分析面板 -->
+            <section id="panel-user" class="panel">
+                <div class="card input-card">
+                    <h2>分析作者作品</h2>
+                    <p class="card-desc">输入抖音用户主页链接，获取并总结该作者的作品</p>
+                    <div class="input-group">
+                        <label>用户主页链接</label>
+                        <input type="text" id="user-url" placeholder="https://www.douyin.com/user/MS4wLjABAAAA...">
+                    </div>
+                    <button class="btn btn-primary" onclick="startUserAnalyze()">
+                        <span class="btn-icon">👤</span> 分析作者
+                    </button>
+                </div>
+                <div id="user-results" class="results-container"></div>
+            </section>
+
+            <!-- 音频提取面板 -->
+            <section id="panel-audio" class="panel">
+                <div class="card input-card">
+                    <h2>提取视频音频</h2>
+                    <p class="card-desc">输入抖音视频链接，提取并下载视频中的音频（MP3格式）</p>
+                    <div class="input-group">
+                        <label>视频链接</label>
+                        <input type="text" id="audio-url" placeholder="https://www.douyin.com/video/1234567890">
+                    </div>
+                    <button class="btn btn-primary" onclick="startAudioExtract()">
+                        <span class="btn-icon">🎧</span> 提取音频
+                    </button>
+                </div>
+                <div id="audio-results" class="results-container"></div>
+            </section>
+        </main>
+
+        <!-- 历史记录 -->
+        <section class="history-section">
+            <div class="history-header" onclick="toggleHistory()">
+                <h3>📋 任务历史</h3>
+                <span class="toggle-arrow" id="history-arrow">▼</span>
+            </div>
+            <div id="history-list" class="history-list collapsed"></div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>抖音视频分析器 · 基于 yt-dlp & FFmpeg</p>
+            <p class="tips">💡 提示：如遇下载失败，可在项目目录放置 <code>cookies.txt</code> 文件解决登录限制</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
